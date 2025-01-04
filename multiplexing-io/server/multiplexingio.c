@@ -25,13 +25,6 @@ int read_multiplexing_IO() {
             perror("socket");
             return 1;
         }
-        // Enable SO_REUSEPORT to allow multiple FDs to bind to the same port
-        // int optval = 1;
-        // if (setsockopt(sockets[i], SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval)) == -1) {
-        //     perror("setsockopt(SO_REUSEPORT) failed");
-        //     close(sockets[i]);
-        //     return 1;
-        // }
 
         // Define server address for each socket
         server_addr.sin_family = AF_INET;

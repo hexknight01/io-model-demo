@@ -1,6 +1,10 @@
 {
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "types.h": "c"
+        "types.h": "c",
+        "__availability": "c",
+        "unistd.h": "c",
+        "multiplexingio.h": "c",
+        "eventdrivenio.h": "c"
     }
 }
