@@ -10,8 +10,6 @@
 #include <poll.h>
 #include <string.h>
 
-
-
 int read_multiplexing_IO() {
     int MAX_EVENTS = 10;
     int BUFFER_SIZE = 1024;
@@ -20,35 +18,35 @@ int read_multiplexing_IO() {
     char applicationBuffer[BUFFER_SIZE];
     struct sockaddr_in server_addr, client_addr;
     socklen_t client_len = sizeof(client_addr);
-
-    // Initialize multiple sockets and bind them to the same port using SO_REUSEPORT
+    // Initialize socket array
     for (int i = 0; i < MAX_SOCKETS; i++) {
         sockets[i] = socket(AF_INET, SOCK_DGRAM, 0);
         if (sockets[i] == -1) {
             perror("socket");
             return 1;
         }
+        // Enable SO_REUSEPORT to allow multiple FDs to bind to the same port
+        // int optval = 1;
+        // if (setsockopt(sockets[i], SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval)) == -1) {
+        //     perror("setsockopt(SO_REUSEPORT) failed");
+        //     close(sockets[i]);
+        //     return 1;
+        // }
 
-        // Set the SO_REUSEPORT option to allow multiple sockets to bind to the same port
-        int optval = 1;
-        if (setsockopt(sockets[i], SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval)) == -1) {
-            perror("setsockopt(SO_REUSEPORT) failed");
-            return 1;
-        }
+        // Define server address for each socket
+        server_addr.sin_family = AF_INET;
+        server_addr.sin_addr.s_addr = INADDR_ANY;
+        server_addr.sin_port = htons(8081 + i); // Assign a different port for each socket
 
-        memset(&server_addr, 0, sizeof(server_addr)); // Zero out the struct
-        server_addr.sin_family = AF_INET;              // IPv4 family
-        server_addr.sin_addr.s_addr = INADDR_ANY;      // Bind to all available interfaces
-        server_addr.sin_port = htons(8081);            // Bind all sockets to port 8081
-
+        // Bind the socket to the specified port and IP address
         if (bind(sockets[i], (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
-            perror("bind");
+            perror("bind failed");
+            close(sockets[i]);
             return 1;
         }
 
-        printf("Socket %d is running on port %d...\n", i, 8081);
+        printf("Socket %d is running on port %d...\n", i, 8081 + i);
     }
-
     // Set up the poll structure
     /*
         struct pollfd {
