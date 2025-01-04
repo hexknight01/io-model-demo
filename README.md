@@ -1,4 +1,4 @@
-# go-io-model-demo
+# io-model-demo
 
 # Handling I/O Operations in Go: Demo Code
 
